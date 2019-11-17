@@ -1,0 +1,7 @@
+.idea/
+ttt
+vendor
+bin
+CMakeLists.txt
+cmake-build-debug/
+
