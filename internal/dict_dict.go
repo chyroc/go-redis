@@ -1,7 +1,9 @@
 package internal
 
+import "github.com/chyroc/go-redis/internal/basetype"
+
 type dictEntry struct {
-	key  sdshdr
+	key  *basetype.SDS
 	v    interface{}
 	next *dictEntry
 }
