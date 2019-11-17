@@ -20,6 +20,12 @@ func NewSDS() *SDS {
 	}
 }
 
+func NewSDSWithString(s string) *SDS {
+	sds := NewSDS()
+	sds.Append(s)
+	return sds
+}
+
 func (s *SDS) Len() int {
 	return s.len
 }
@@ -41,6 +47,14 @@ func (s *SDS) Append(str string) {
 	copy(s.buf[s.len:s.len+strlen], str)
 	s.len += strlen
 	s.free -= strlen
+}
+
+func (s *SDS) EqualToString(str string) bool {
+	strlen := len(str)
+	if strlen != s.len {
+		return false
+	}
+	return s.String() == str
 }
 
 // 扩容，容量调整为现在的两倍

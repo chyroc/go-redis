@@ -10,5 +10,5 @@ func TestLinkedList(t *testing.T) {
 	as := assert.New(t)
 
 	list := basetype.NewLinkedList()
-	as.Equal(list.Len(), 0)
+	as.Equal(list.Len(), uint32(0))
 }
