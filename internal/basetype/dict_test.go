@@ -1,15 +1,14 @@
-package basetype_test
+package basetype
 
 import (
 	"fmt"
-	"github.com/chyroc/go-redis/internal/basetype"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestDict(t *testing.T) {
 	as := assert.New(t)
-	dict := basetype.NewDict()
+	dict := NewDict()
 
 	m := []string{}
 	for i := 0; i < 20; i++ {

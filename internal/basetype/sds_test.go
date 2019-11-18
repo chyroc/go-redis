@@ -1,8 +1,7 @@
-package basetype_test
+package basetype
 
 import (
 	cryptorand "crypto/rand"
-	"github.com/chyroc/go-redis/internal/basetype"
 	"math/big"
 	mathrand "math/rand"
 	"testing"
@@ -13,7 +12,7 @@ import "github.com/stretchr/testify/assert"
 func TestSDS(t *testing.T) {
 	as := assert.New(t)
 
-	sds := basetype.NewSDS()
+	sds := NewSDS()
 	as.Equal(sds.String(), "")
 	as.Equal(sds.Len(), 0)
 

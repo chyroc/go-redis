@@ -1,7 +1,6 @@
-package basetype_test
+package basetype
 
 import (
-	"github.com/chyroc/go-redis/internal/basetype"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,6 +8,6 @@ import (
 func TestLinkedList(t *testing.T) {
 	as := assert.New(t)
 
-	list := basetype.NewLinkedList()
+	list := NewLinkedList()
 	as.Equal(list.Len(), uint32(0))
 }
