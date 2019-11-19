@@ -2,6 +2,7 @@ package basetype
 
 import (
 	"fmt"
+	"github.com/chyroc/go-redis/internal/tests"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -12,7 +13,7 @@ func TestDict(t *testing.T) {
 
 	m := []string{}
 	for i := 0; i < 20; i++ {
-		s := RandStringRunes(RandomInt())
+		s := tests.RandStringRunes(tests.RandomIntIn100())
 		dict.Set(s, s)
 		m = append(m, s)
 	}
