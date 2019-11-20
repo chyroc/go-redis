@@ -9,10 +9,14 @@ type RedisListObject struct {
 }
 
 func NewRedisListObject(l []string) *RedisListObject {
+	// 只有满足下面两个条件的时候，才能用 ziplist
+	// 所有字符串长度都小于 64 字节
+	// 元素个数小于 512
+
 	list := &RedisListObject{
 		redisObjectImpl: &redisObjectImpl{
 			type_:    RedisObjectTypeList,
-			encoding: RedisObjectEncodingZipList,
+			encoding: RedisObjectEncodingLinkedList, // TODO: ziplist
 			ptr:      basetype.NewLinkedList(),
 		},
 	}
@@ -24,37 +28,37 @@ func NewRedisListObject(l []string) *RedisListObject {
 }
 
 func (r *RedisListObject) Len() uint32 {
-	return r.linkedList().Len()
+	return r.point().Len()
 }
 
 func (r *RedisListObject) LPush(value interface{}) {
-	r.linkedList().AddHead(value)
+	r.point().AddHead(value)
 }
 
 func (r *RedisListObject) RPush(value interface{}) {
-	r.linkedList().AddTail(value)
+	r.point().AddTail(value)
 }
 
 func (r *RedisListObject) LPop(value interface{}) interface{} {
-	if r.linkedList().Len() == 0 {
+	if r.point().Len() == 0 {
 		return nil
 	}
-	data := r.linkedList().First()
-	r.linkedList().DelHead()
+	data := r.point().First()
+	r.point().DelHead()
 	return data
 }
 
 func (r *RedisListObject) RPop(value interface{}) interface{} {
-	if r.linkedList().Len() == 0 {
+	if r.point().Len() == 0 {
 		return nil
 	}
-	data := r.linkedList().Last()
-	r.linkedList().DelTail()
+	data := r.point().Last()
+	r.point().DelTail()
 	return data
 }
 
 func (r *RedisListObject) Index(idx uint32) interface{} {
-	v := r.linkedList().Index(idx)
+	v := r.point().Index(idx)
 	if v == nil {
 		return nil
 	}
@@ -62,21 +66,9 @@ func (r *RedisListObject) Index(idx uint32) interface{} {
 }
 
 func (r *RedisListObject) Insert(idx uint32, value interface{}) {
-	r.linkedList().Insert(idx, value)
+	r.point().Insert(idx, value)
 }
 
-func (r *RedisListObject) linkedList() *basetype.LinkedList {
+func (r *RedisListObject) point() *basetype.LinkedList {
 	return r.ptr.(*basetype.LinkedList)
-}
-
-// TODO
-func (r *RedisListObject) expencoding(v interface{}) {
-	if r.encoding == RedisObjectEncodingLinkedList {
-		return
-	}
-
-	// 只有满足下面两个条件的时候，才能用 ziplist
-	// 所有字符串长度都小于 64 字节
-	// 元素个数小于 512
-
 }

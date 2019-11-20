@@ -132,6 +132,14 @@ func (d *Dict) Set(k string, v interface{}) {
 	}
 }
 
+func (d *Dict) Size() uint32 {
+	if d.isRehashing() {
+		return d.ht[0].used + d.ht[1].used
+	} else {
+		return d.ht[0].used
+	}
+}
+
 // todo: rehash
 func (d *Dict) Get(k string) interface{} {
 	if d.isRehashing() && d.ht[0].used == 0 {
