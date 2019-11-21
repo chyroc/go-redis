@@ -39,7 +39,7 @@ func SearchFirstGreaterEqual(ss SequentialSequence, data int64) (idx uint32, fou
 			"high":   high,
 			"mid":    mid,
 			"search": data,
-			"got":   d,
+			"got":    d,
 		}).Infof("[helper.binary_search] get mid data")
 		if d >= data {
 			if mid == 0 || ss.GetData(mid-1) < data {

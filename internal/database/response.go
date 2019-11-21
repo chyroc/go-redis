@@ -1,6 +1,9 @@
 package database
 
-import "github.com/chyroc/go-redis/internal/resp"
+import (
+	"fmt"
+	"github.com/chyroc/go-redis/internal/resp"
+)
 
 func interfaceToReply(i interface{}) *resp.Reply {
 	if i == nil {
@@ -20,6 +23,5 @@ func interfaceToReply(i interface{}) *resp.Reply {
 		return resp.NewWithStringSlice(r)
 	}
 
-	panic(i)
-	return nil
+	panic(fmt.Sprintf("%b 没有处理", i))
 }

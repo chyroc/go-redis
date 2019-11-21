@@ -1,4 +1,5 @@
 package basetype
+
 //
 //import (
 //	"fmt"

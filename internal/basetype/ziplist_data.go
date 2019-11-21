@@ -1,4 +1,5 @@
 package basetype
+
 //
 //import (
 //	"github.com/chyroc/go-redis/internal/helper"

@@ -222,10 +222,10 @@ func (s *SkipList) Add(key string, score float64) error {
 }
 
 func (s *SkipList) Get(score float64) (result []*SkipListNode, err error) {
-	logger.Log.WithFields(logrus.Fields{"score": score,}).Infof("[skiplist] get")
+	logger.Log.WithFields(logrus.Fields{"score": score}).Infof("[skiplist] get")
 
 	nodeOrNext := s.head.getNodeOrNextWithCompare("", score)
-	logger.Log.WithFields(logrus.Fields{"nodeOrNext": nodeOrNext,}).Infof("[skiplist] get")
+	logger.Log.WithFields(logrus.Fields{"nodeOrNext": nodeOrNext}).Infof("[skiplist] get")
 	if nodeOrNext == nil {
 		return
 	}

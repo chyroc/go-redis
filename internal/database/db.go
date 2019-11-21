@@ -22,7 +22,7 @@ func New() *Database {
 	return d
 }
 
-func (d *Database) DB(i int) (*RedisDB) {
+func (d *Database) DB(i int) *RedisDB {
 	return d.db[i]
 }
 
@@ -39,7 +39,7 @@ func (r *RedisDB) ExecCommand(args ...string) *resp.Reply {
 		return resp.NewWithErr(fmt.Errorf("%q 命令不支持", cmd))
 	}
 	if t.argsCount >= 0 && len(args) != t.argsCount {
-		return resp.NewWithErr(fmt.Errorf("%q 命令的参数需要 %d 个，但是传递了 %d 个", t.argsCount, len(args), ))
+		return resp.NewWithErr(fmt.Errorf("%q 命令的参数需要 %d 个，但是传递了 %d 个", cmd, t.argsCount, len(args)))
 	}
 
 	res, err := t.processor(r, args...)
