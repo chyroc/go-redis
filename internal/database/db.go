@@ -32,11 +32,12 @@ func (d *Database) ExecCommand(cmd string, args ...string) {
 
 type RedisDB struct {
 	dict    *basetype.Dict // 键值对
-	expires *basetype.Dict // 过期时间 uint64，毫秒时间戳
+	expires *basetype.Dict // 过期时间 int64，毫秒时间戳
 }
 
 func newRedisSB() *RedisDB {
 	return &RedisDB{
-		dict: basetype.NewDict(),
+		dict:    basetype.NewDict(),
+		expires: basetype.NewDict(),
 	}
 }

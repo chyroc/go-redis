@@ -36,19 +36,34 @@ func (r *redisCli) run() error {
 		if err != nil {
 			return err
 		}
+		fmt.Println(reply.String())
+		p := reply.Replies
 
-		for _, v := range reply.Replies {
-			if v.Str != "" {
-				switch strings.ToLower(v.Str) {
-				case "command":
-					res := resp.NewWithStringSlice([]string{"GET"})
-					_, err := r.writer.Write(res.Bytes())
-					return err
-				case "get":
-				case "set":
+		if len(p) == 0 {
+			return fmt.Errorf("空命令")
+		}
+
+		switch strings.ToLower(p[0].Str) {
+		case "command":
+			res := resp.NewWithStringSlice([]string{"GET"})
+			_, _ = r.writer.Write(res.Bytes())
+		case "get":
+			str, err := r.db.Get(p[1].Str)
+			if err != nil {
+				_, _ = r.writer.Write(resp.NewWithErr(err).Bytes())
+			} else {
+				if str == nil {
+					_, _ = r.writer.Write(resp.NewWithNull().Bytes())
+				} else {
+					_, _ = r.writer.Write(resp.NewWithStr(*str).Bytes())
 				}
 			}
-			fmt.Println(v.String())
+		case "set":
+			if err := r.db.Set(p[1].Str, p[2].Str); err != nil {
+				_, _ = r.writer.Write(resp.NewWithErr(err).Bytes())
+			} else {
+				_, _ = r.writer.Write(resp.NewWithNull().Bytes())
+			}
 		}
 	}
 }

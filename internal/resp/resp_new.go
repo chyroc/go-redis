@@ -3,8 +3,13 @@ package resp
 func NewWithErr(err error) *Reply {
 	if err != nil {
 		return &Reply{Err: err}
+	} else {
+		return &Reply{Null: true}
 	}
-	return nil
+}
+
+func NewWithStr(str string) *Reply {
+	return &Reply{Str: str}
 }
 
 func NewWithBytes(bs []byte) *Reply {

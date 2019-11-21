@@ -60,7 +60,7 @@ func (r *serverImpl) getClient(conn net.Conn) *redisCli {
 }
 
 func (r *serverImpl) clientRun(conn net.Conn) error {
-	defer conn.Close()
+	//defer conn.Close()
 
 	cli := r.getClient(conn)
 

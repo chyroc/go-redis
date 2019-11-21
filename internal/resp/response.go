@@ -24,6 +24,9 @@ func (r *Reply) Bytes() []byte {
 		buf.WriteByte('$')
 		buf.WriteString(strconv.Itoa(-1))
 
+		buf.WriteByte(cr)
+		buf.WriteByte(lf)
+
 	} else if r.Integer != 0 {
 
 		// 整数回复 ":"
