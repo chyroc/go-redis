@@ -8,14 +8,14 @@ type commandTemplate struct {
 }
 
 // 0 1 2 表示参数个数
-// -1 表示最x1个
+// -1 表示最多 x 个
 var commandTemplates = map[string]commandTemplate{
 	"get": {
 		argsCount: 1,
 		processor: Get,
 	},
 	"set": {
-		argsCount: 2,
+		argsCount: -7,
 		processor: Set,
 	},
 }

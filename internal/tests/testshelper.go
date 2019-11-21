@@ -32,3 +32,11 @@ func RandStringRunes(n int) string {
 	}
 	return string(b)
 }
+
+func RandString32() string {
+	b := make([]rune, 32)
+	for i := range b {
+		b[i] = letterRunes[mathrand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
