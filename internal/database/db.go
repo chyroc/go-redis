@@ -1,4 +1,4 @@
-package db
+package database
 
 import "github.com/chyroc/go-redis/internal/basetype"
 
@@ -16,6 +16,10 @@ func New() *Database {
 	}
 
 	return d
+}
+
+func (d *Database) Run(cmd string, args ...string) {
+
 }
 
 type redisDB struct {
