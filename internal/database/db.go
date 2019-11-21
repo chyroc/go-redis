@@ -1,6 +1,10 @@
 package database
 
-import "github.com/chyroc/go-redis/internal/basetype"
+import (
+	"fmt"
+	"github.com/chyroc/go-redis/internal/basetype"
+	"github.com/chyroc/go-redis/internal/resp"
+)
 
 type Database struct {
 	dbnum int // 1 - 16
@@ -22,12 +26,28 @@ func (d *Database) DB(i int) (*RedisDB) {
 	return d.db[i]
 }
 
-func (d *Database) Start() error {
-	return nil
-}
+func (r *RedisDB) ExecCommand(args ...string) *resp.Reply {
+	if len(args) == 0 {
+		return resp.NewWithErr(fmt.Errorf("至少需要一个命令"))
+	}
 
-func (d *Database) ExecCommand(cmd string, args ...string) {
+	cmd := args[0]
+	args = args[1:]
 
+	t, ok := commandTemplates[cmd]
+	if !ok {
+		return resp.NewWithErr(fmt.Errorf("%q 命令不支持", cmd))
+	}
+	if t.argsCount >= 0 && len(args) != t.argsCount {
+		return resp.NewWithErr(fmt.Errorf("%q 命令的参数需要 %d 个，但是传递了 %d 个", t.argsCount, len(args), ))
+	}
+
+	res, err := t.processor(r, args...)
+	if err != nil {
+		return resp.NewWithErr(err)
+	} else {
+		return interfaceToReply(res)
+	}
 }
 
 type RedisDB struct {

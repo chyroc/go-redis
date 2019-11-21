@@ -5,7 +5,9 @@ import (
 	"time"
 )
 
-func (r *RedisDB) Get(k string) (*string, error) {
+func Get(r *RedisDB, args ...string) (interface{}, error) {
+	k := args[0]
+
 	v := r.dict.Get(k)
 	if v == nil {
 		return nil, nil
@@ -23,11 +25,4 @@ func (r *RedisDB) Get(k string) (*string, error) {
 	}
 
 	return pointer.String(v.(string)), nil
-}
-
-// 永久，-1
-func (r *RedisDB) Set(k, v string) ( error) {
-	r.dict.Set(k, v)
-	r.expires.Set(k, int64(-1))
-	return nil
 }
