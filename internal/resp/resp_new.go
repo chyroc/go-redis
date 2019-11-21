@@ -19,6 +19,20 @@ func NewWithNull() *Reply {
 	return &Reply{Null: true}
 }
 
+func NewWithStringSlice(l []string) *Reply {
+	var replies []*Reply
+	for _, v := range l {
+		replies = append(replies, &Reply{
+			Err:     nil,
+			Null:    false,
+			Str:     v,
+			Integer: 0,
+			Replies: nil,
+		})
+	}
+	return &Reply{Replies: replies}
+}
+
 func NewWithReplies(replies []*Reply) *Reply {
 	return &Reply{Replies: replies}
 }

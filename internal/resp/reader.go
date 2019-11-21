@@ -3,6 +3,7 @@ package resp
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
 )
 
@@ -76,5 +77,5 @@ func (r *parser) Read() (*Reply, error) {
 		return &Reply{Replies: replys}, nil
 	}
 
-	return nil, ErrUnSupportRespType
+	return nil, fmt.Errorf("%b(%s): %w", respType, []byte{respType}, ErrUnSupportRespType)
 }

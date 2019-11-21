@@ -2,6 +2,7 @@ package resp
 
 import (
 	"bufio"
+	"fmt"
 	"strconv"
 )
 
@@ -41,9 +42,13 @@ func (r *parser) readIntBeforeCRLF() (int64, error) {
 }
 
 func (r *parser) readBytes(length int) ([]byte, error) {
-	bs := make([]byte, length)
-	if _, err := r.reader.Read(bs); err != nil {
+	bs := make([]byte, length+2)
+	n, err := r.reader.Read(bs)
+	if err != nil {
 		return nil, err
 	}
-	return bs, nil
+	if n != length+2 {
+		return nil, fmt.Errorf("expect to read %d bytes, but got %d bytes", length+2, n)
+	}
+	return bs[:length], nil
 }
