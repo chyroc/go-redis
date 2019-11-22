@@ -9,7 +9,7 @@ import (
 )
 
 var client *redis.Client
-var addr = ":9090"
+var addr = ":9091"
 
 func init() {
 	go func() {
