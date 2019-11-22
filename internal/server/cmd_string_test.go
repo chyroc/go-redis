@@ -77,3 +77,21 @@ func TestStrLen(t *testing.T) {
 		as.Equal(int64(len(v)), c3.Val())
 	})
 }
+
+func TestAppend(t *testing.T) {
+	as := assert.New(t)
+
+	t.Run("", func(t *testing.T) {
+		k := tests.RandString32()
+		v := tests.RandString32()
+
+		c1 := client.Append(k, v)
+		as.Nil(c1.Err())
+		as.Equal(int64(len(v)), c1.Val())
+
+		v2 := tests.RandString32()
+		c2 := client.Append(k, v2)
+		as.Nil(c2.Err())
+		as.Equal(int64(len(v+v2)), c2.Val())
+	})
+}

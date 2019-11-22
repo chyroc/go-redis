@@ -2,47 +2,29 @@ package database
 
 import (
 	"fmt"
+	"github.com/chyroc/go-redis/internal/basetype"
 )
 
 const TimeNeverExpire int64 = -1 // 永久，-1
 const TimeExpired int64 = -2     // 已过期、不存在
 
-func stringOrError(v interface{}) (interface{}, error) {
+func sdsStringOrError(v interface{}) (interface{}, error) {
 	if v == nil {
 		return v, nil
 	}
 	switch v.(type) {
-	case string:
+	case *basetype.SDS:
 		return v, nil
 	default:
-		return nil, ErrOperationWrongKindValue
+		return nil, fmt.Errorf("%v(%T): %w", v, v, ErrOperationWrongKindValue)
 	}
 }
 
 func Get(r *RedisDB, args ...string) (interface{}, error) {
 	k := args[0]
 
-	v := r.dict.Get(k)
-	if v == nil {
-		return nil, nil
-	}
-	if _, err := stringOrError(v); err != nil {
-		return nil, err
-	}
-
-	expire := r.expires.Get(k).(int64)
-	if expire == TimeNeverExpire {
-		return v, nil
-	}
-
-	if now := nowMillisecond(); now > expire {
-		// 过期
-		r.dict.Del(k)
-		r.expires.Del(k)
-		return nil, nil
-	}
-
-	return v, nil
+	v, _, err := r.getSDS(k)
+	return v, err
 }
 
 // SET key value [EX seconds] [PX milliseconds] [NX|XX]
@@ -50,32 +32,21 @@ func Set(r *RedisDB, args ...string) (interface{}, error) {
 	k := args[0]
 	v := args[1]
 
-	offset, millisecond, err := getMillisecond(args, 2)
+	v2, _, err := r.getSDS(k)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("millisecond", millisecond)
-	if millisecond == 0 {
-		millisecond = TimeNeverExpire
-	} else {
-		millisecond += nowMillisecond()
+
+	offset, millisecond, err := getMillisecond(args, 2)
+	if err != nil {
+		return nil, err
 	}
 	nx, xx, err := getNxXx(args, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	v2 := r.dict.Get(k)
-	if nx && v2 != nil {
-		return nil, nil
-	}
-	if xx && v2 == nil {
-		return nil, nil
-	}
-
-	r.dict.Set(k, v)
-	r.expires.Set(k, millisecond)
-	return status("OK"), nil
+	return r.setSDS(k, v, v2, millisecond, nx, xx)
 }
 
 // GETSET key value
@@ -83,21 +54,16 @@ func GetSet(r *RedisDB, args ...string) (interface{}, error) {
 	k := args[0]
 	v := args[1]
 
-	if _, err := stringOrError(v); err != nil {
-		return nil, err
-	}
-
-	old, err := Get(r, k)
+	v2, _, err := r.getSDS(k)
 	if err != nil {
 		return nil, err
 	}
-	//stringOrError(old)
 
-	if _, err := Set(r, k, v); err != nil {
+	if _, err := r.setSDS(k, v, nil, TimeNeverExpire, false, false); err != nil {
 		return nil, err
 	}
 
-	return old, nil
+	return v2, nil
 }
 
 // STRLEN key
@@ -105,15 +71,38 @@ func GetSet(r *RedisDB, args ...string) (interface{}, error) {
 // 当键 key 不存在时， 命令返回 0 。
 // 当 key 储存的不是字符串值时， 返回一个错误。
 func StrLen(r *RedisDB, args ...string) (interface{}, error) {
-	v, err := Get(r, args...)
+	k := args[0]
+
+	v, _, err := r.getSDS(k)
 	if err != nil {
 		return nil, err
 	}
 	if v == nil {
 		return 0, nil
 	}
-	if _, err := stringOrError(v); err != nil {
+	return v.Len(), nil
+}
+
+// APPEND key value
+// 如果键 key 已经存在并且它的值是一个字符串， APPEND 命令将把 value 追加到键 key 现有值的末尾。
+// 如果 key 不存在， APPEND 就简单地将键 key 的值设为 value ， 就像执行 SET key value 一样。
+// 返回：追加 value 之后， 键 key 的值的长度。
+func Append(r *RedisDB, args ...string) (interface{}, error) {
+	k := args[0]
+	v := args[1]
+
+	v2, _, err := r.getSDS(k)
+	if err != nil {
 		return nil, err
 	}
-	return len(v.(string)), nil
+	if v2 == nil {
+		if _, err := Set(r, k, v); err != nil {
+			return nil, err
+		}
+		return len(v), nil
+	}
+
+	v2.Append(v)
+
+	return v2.Len(), nil
 }
