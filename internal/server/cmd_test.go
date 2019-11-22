@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"os"
 	"time"
 
 	"github.com/go-redis/redis/v7"
@@ -9,14 +10,13 @@ import (
 )
 
 var client *redis.Client
-var addr = ":9091"
+var addr = os.Getenv("GO_REDIS_PORT") // GO_REDIS_PORT=:9091 go test ./...
 
 func init() {
 	go func() {
 		if addr == ":9090" {
 			return
 		}
-		panic("xx")
 		if err := server.New(addr).Run(); err != nil {
 			panic(err)
 		}

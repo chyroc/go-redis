@@ -2,8 +2,8 @@ name: Go Build Test
 on: [push]
 jobs:
 
-  build:
-    name: Build
+  go-redis-action:
+    name: go-redis-action
     runs-on: ubuntu-latest
     steps:
 
@@ -27,3 +27,9 @@ jobs:
       uses: zhulik/redis-action@v1.0.0
       with:
         redis version: latest
+
+    - name: Test Origin Redis
+      run: GO_REDIS_PORT=:6379 go test ./...
+
+    - name: Test Self
+      run: GO_REDIS_PORT=:9091 go test ./...
