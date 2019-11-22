@@ -23,13 +23,22 @@ func interfaceToReply(i interface{}) *resp.Reply {
 			return resp.NewWithNull()
 		}
 		return resp.NewWithStr(*r)
-	case basetype.SDS:
-		return resp.NewWithStr(r.String())
 	case *basetype.SDS:
 		if r == nil {
 			return resp.NewWithNull()
 		}
 		return resp.NewWithStr(r.String())
+	case []*basetype.SDS:
+		var rr = &resp.Reply{ReplyType: resp.ReplyTypeReplies}
+		for _, v := range r {
+			if v == nil {
+				rr.Replies = append(rr.Replies, resp.NewWithNull())
+			} else {
+				rr.Replies = append(rr.Replies, resp.NewWithStr(v.String()))
+			}
+		}
+		return rr
+
 	case []string:
 		return resp.NewWithStringSlice(r)
 	case int:

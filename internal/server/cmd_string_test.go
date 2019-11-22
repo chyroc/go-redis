@@ -118,3 +118,34 @@ func TestIncr(t *testing.T) {
 		}
 	})
 }
+
+func TestMGetSet(t *testing.T) {
+	as := assert.New(t)
+
+	t.Run("", func(t *testing.T) {
+		c1 := client.MGet(tests.RandString32())
+		as.Nil(c1.Err())
+		as.Len(c1.Val(), 1)
+		as.Nil(c1.Val()[0])
+	})
+
+	t.Run("", func(t *testing.T) {
+		c1 := client.MGet(tests.RandString32(), tests.RandString32())
+		as.Nil(c1.Err())
+		as.Len(c1.Val(), 2)
+		as.Nil(c1.Val()[0])
+		as.Nil(c1.Val()[1])
+	})
+
+	t.Run("", func(t *testing.T) {
+		k := tests.RandString32()
+
+		as.Nil(client.Set(k, "x", 0).Err())
+
+		c1 := client.MGet(k, tests.RandString32())
+		as.Nil(c1.Err())
+		as.Len(c1.Val(), 2)
+		as.Equal("x", c1.Val()[0])
+		as.Nil(c1.Val()[1])
+	})
+}

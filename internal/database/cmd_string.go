@@ -47,7 +47,7 @@ func Set(r *RedisDB, args ...string) (interface{}, error) {
 		return nil, err
 	}
 
-	return r.setSDS(k, v, v2, millisecond, nx, xx)
+	return r.setSDS(k, v, v2, millisecond, nx, xx), nil
 }
 
 // GETSET key value
@@ -60,10 +60,7 @@ func GetSet(r *RedisDB, args ...string) (interface{}, error) {
 		return nil, err
 	}
 
-	if _, err := r.setSDS(k, v, nil, TimeNeverExpire, false, false); err != nil {
-		return nil, err
-	}
-
+	r.setSDS(k, v, nil, TimeNeverExpire, false, false)
 	return v2, nil
 }
 
@@ -128,11 +125,44 @@ func Incr(r *RedisDB, args ...string) (interface{}, error) {
 		return nil, err
 	}
 	if v == nil {
-		if _, err := r.setSDS(k, strconv.Itoa(1), nil, 0, false, false); err != nil {
-			return nil, err
-		}
+		r.setSDS(k, strconv.Itoa(1), nil, 0, false, false)
 		return 1, nil
 	}
 
 	return v.Int64Incr()
+}
+
+// MSET key value [key value …]
+// 同时为多个键设置值。
+// MSET 是一个原子性(atomic)操作， 所有给定键都会在同一时间内被设置， 不会出现某些键被设置了但是另一些键没有被设置的情况。
+// MSET 命令总是返回 OK 。
+func MSet(r *RedisDB, args ...string) (interface{}, error) {
+	if len(args)%2 != 0 {
+		return nil, fmt.Errorf("mset need double 2 params")
+	}
+
+	for i := 0; i < len(args)-1; {
+		k := args[i]
+		v := args[i+1]
+		i += 2
+		r.setSDS(k, v, nil, TimeNeverExpire, false, false)
+	}
+	return status("OK"), nil
+}
+
+// MGET key [key …]
+// 返回给定的一个或多个字符串键的值。
+// 如果给定的字符串键里面， 有某个键不存在， 那么这个键的值将以特殊值 nil 表示。
+// 返回值 :MGET 命令将返回一个列表， 列表中包含了所有给定键的值。
+func MGet(r *RedisDB, args ...string) (interface{}, error) {
+	res := []*basetype.SDS{}
+	for i := 0; i < len(args); i++ {
+		k := args[i]
+		v, _, err := r.getSDS(k)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, v)
+	}
+	return res, nil
 }

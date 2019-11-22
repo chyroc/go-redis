@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-type replyType int
+type ReplyType int
 
 const (
 	replyTypeInt = iota + 1
 	replyTypeStatus
 	replyTypeString
-	replyTypeReplies
+	ReplyTypeReplies
 )
 
 // Reply ...
@@ -23,7 +23,7 @@ type Reply struct {
 	Integer int64
 	Replies []*Reply
 
-	replyType replyType
+	ReplyType ReplyType
 }
 
 // String just for test

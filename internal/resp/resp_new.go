@@ -9,15 +9,15 @@ func NewWithErr(err error) *Reply {
 }
 
 func NewWithStatus(str string) *Reply {
-	return &Reply{str: str, replyType: replyTypeStatus}
+	return &Reply{str: str, ReplyType: replyTypeStatus}
 }
 
 func NewWithStr(str string) *Reply {
-	return &Reply{str: str, replyType: replyTypeString}
+	return &Reply{str: str, ReplyType: replyTypeString}
 }
 
 func NewWithInt64(i int64) *Reply {
-	return &Reply{Integer: i, replyType: replyTypeInt}
+	return &Reply{Integer: i, ReplyType: replyTypeInt}
 }
 
 func NewWithNull() *Reply {
@@ -33,5 +33,5 @@ func NewWithStringSlice(l []string) *Reply {
 }
 
 func NewWithReplies(replies []*Reply) *Reply {
-	return &Reply{Replies: replies, replyType: replyTypeReplies}
+	return &Reply{Replies: replies, ReplyType: ReplyTypeReplies}
 }

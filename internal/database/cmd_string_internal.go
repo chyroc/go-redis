@@ -33,17 +33,17 @@ func (r *RedisDB) getSDS(k string) (*basetype.SDS, int64, error) {
 	return vv, expire, nil
 }
 
-func (r *RedisDB) setSDS(k, v string, old interface{}, millisecond int64, nx bool, xx bool) (interface{}, error) {
+func (r *RedisDB) setSDS(k, v string, old interface{}, millisecond int64, nx bool, xx bool) interface{} {
 	if nx && old != nil {
-		return nil, nil
+		return nil
 	}
 	if xx && old == nil {
-		return nil, nil
+		return nil
 	}
 
 	r.dict.Set(k, basetype.NewSDSWithString(v))
 	r.expires.Set(k, millisecond)
-	return status("OK"), nil
+	return status("OK")
 }
 
 func getMillisecond(args []string, offset int) (off int, ms int64, err error) {

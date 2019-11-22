@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/chyroc/go-redis/internal/basetype"
 	"github.com/chyroc/go-redis/internal/resp"
+	"math"
 	"strings"
 )
 
@@ -39,11 +40,13 @@ func (r *RedisDB) ExecCommand(args ...string) *resp.Reply {
 	if !ok {
 		return resp.NewWithErr(fmt.Errorf("%q 命令不支持", cmd))
 	}
-	if t.argsCount >= 0 && len(args) != t.argsCount {
-		return resp.NewWithErr(fmt.Errorf("%q 命令的参数需要 %d 个，但是传递了 %d 个", cmd, t.argsCount, len(args)))
-	}
-	if t.argsCount < 0 && len(args) > -1*t.argsCount {
-		return resp.NewWithErr(fmt.Errorf("%q 命令的参数最多需要 %d 个，但是传递了 %d 个", cmd, -1*t.argsCount, len(args)))
+	if t.argsCount != math.MaxInt8 {
+		if t.argsCount >= 0 && len(args) != t.argsCount {
+			return resp.NewWithErr(fmt.Errorf("%q 命令的参数需要 %d 个，但是传递了 %d 个", cmd, t.argsCount, len(args)))
+		}
+		if t.argsCount < 0 && len(args) > -1*t.argsCount {
+			return resp.NewWithErr(fmt.Errorf("%q 命令的参数最多需要 %d 个，但是传递了 %d 个", cmd, -1*t.argsCount, len(args)))
+		}
 	}
 
 	res, err := t.processor(r, args...)

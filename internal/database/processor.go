@@ -1,5 +1,7 @@
 package database
 
+import "math"
+
 type CommandProcessor func(r *RedisDB, args ...string) (interface{}, error)
 
 type commandTemplate struct {
@@ -34,6 +36,14 @@ var commandTemplates = map[string]commandTemplate{
 	"incr": {
 		argsCount: 1,
 		processor: Incr,
+	},
+	"mset": {
+		argsCount: math.MaxInt8,
+		processor: MSet,
+	},
+	"mget": {
+		argsCount: math.MaxInt8,
+		processor: MGet,
 	},
 
 	// expire

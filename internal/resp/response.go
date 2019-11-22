@@ -28,7 +28,7 @@ func (r *Reply) Bytes() []byte {
 		buf.WriteByte(cr)
 		buf.WriteByte(lf)
 
-	} else if r.replyType == replyTypeInt {
+	} else if r.ReplyType == replyTypeInt {
 
 		// 整数回复 ":"
 
@@ -38,7 +38,7 @@ func (r *Reply) Bytes() []byte {
 		buf.WriteByte(cr)
 		buf.WriteByte(lf)
 
-	} else if r.replyType == replyTypeStatus {
+	} else if r.ReplyType == replyTypeStatus {
 
 		// 状态回复 "+"
 
@@ -48,7 +48,7 @@ func (r *Reply) Bytes() []byte {
 		buf.WriteByte(cr)
 		buf.WriteByte(lf)
 
-	} else if r.replyType == replyTypeReplies {
+	} else if r.ReplyType == ReplyTypeReplies {
 
 		// 多条批量回复 "*"
 
@@ -61,7 +61,7 @@ func (r *Reply) Bytes() []byte {
 		for _, v := range r.Replies {
 			buf.Write(v.Bytes())
 		}
-	} else if r.replyType == replyTypeString {
+	} else if r.ReplyType == replyTypeString {
 
 		buf.WriteByte('$')
 		buf.WriteString(strconv.Itoa(len(r.str)))
