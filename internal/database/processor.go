@@ -51,4 +51,14 @@ var commandTemplates = map[string]commandTemplate{
 		argsCount: 1,
 		processor: Ttl,
 	},
+
+	// hash
+	"hset": {
+		argsCount: 3,
+		processor: HSet,
+	},
+	"hget": {
+		argsCount: 2,
+		processor: HGet,
+	},
 }
