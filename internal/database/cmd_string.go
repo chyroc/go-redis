@@ -2,9 +2,6 @@ package database
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
-	"time"
 )
 
 const TimeNeverExpire int64 = -1 // 永久，-1
@@ -103,50 +100,20 @@ func GetSet(r *RedisDB, args ...string) (interface{}, error) {
 	return old, nil
 }
 
-func getMillisecond(args []string, offset int) (off int, ms int64, err error) {
-	if len(args) < offset+1 {
-		return offset, 0, nil
-	}
-
-	r := strings.ToLower(args[offset])
-	if r != "ex" && r != "px" {
-		return offset, 0, nil
-	}
-	if len(args) < offset {
-		return 0, 0, fmt.Errorf("[Redis.Get] got params %q, but no seconds params", args[offset])
-	}
-
-	i, err := strconv.ParseInt(args[offset+1], 10, 64)
+// STRLEN key
+// 返回键 key 储存的字符串值的长度。
+// 当键 key 不存在时， 命令返回 0 。
+// 当 key 储存的不是字符串值时， 返回一个错误。
+func StrLen(r *RedisDB, args ...string) (interface{}, error) {
+	v, err := Get(r, args...)
 	if err != nil {
-		return 0, 0, fmt.Errorf("[Redis.Get] got params %q, but next param %q is not int", args[offset], args[offset+1])
+		return nil, err
 	}
-
-	if r == "ex" {
-		// 秒
-		return offset + 2, 1000 * i, nil
+	if v == nil {
+		return 0, nil
 	}
-	// 毫秒
-	return offset + 2, i, nil
-}
-
-func getNxXx(args []string, offset int) (nx bool, xx bool, err error) {
-	if len(args) < offset+1 {
-		return
+	if _, err := stringOrError(v); err != nil {
+		return nil, err
 	}
-	r := strings.ToLower(args[offset])
-	if r != "nx" && r != "xx" {
-		err = fmt.Errorf("[Redis.Get] got params %q, but need %q or %q", args[offset], "NX", "XX")
-		return
-	}
-
-	if len(args) > offset+1 {
-		err = fmt.Errorf("[Redis.Get] got params %q, which endswith %q, but got extra params", args, args[offset])
-		return
-	}
-
-	return r == "nx", r == "xx", nil
-}
-
-func nowMillisecond() int64 {
-	return time.Now().UnixNano() / 1000 / 1000
+	return len(v.(string)), nil
 }

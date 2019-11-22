@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/chyroc/go-redis/internal/basetype"
 	"github.com/chyroc/go-redis/internal/resp"
+	"strings"
 )
 
 type Database struct {
@@ -31,7 +32,7 @@ func (r *RedisDB) ExecCommand(args ...string) *resp.Reply {
 		return resp.NewWithErr(fmt.Errorf("至少需要一个命令"))
 	}
 
-	cmd := args[0]
+	cmd := strings.ToLower(args[0])
 	args = args[1:]
 
 	t, ok := commandTemplates[cmd]

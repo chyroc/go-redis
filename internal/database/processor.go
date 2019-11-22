@@ -23,6 +23,10 @@ var commandTemplates = map[string]commandTemplate{
 		argsCount: 2,
 		processor: GetSet,
 	},
+	"strlen": {
+		argsCount: 1,
+		processor: StrLen,
+	},
 
 	// expire
 	"ttl": {

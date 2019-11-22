@@ -58,3 +58,22 @@ func TestGetSet(t *testing.T) {
 		as.Equal(v, c3.Val())
 	})
 }
+
+func TestStrLen(t *testing.T) {
+	as := assert.New(t)
+
+	t.Run("", func(t *testing.T) {
+		k := tests.RandString32()
+
+		c1 := client.StrLen(k)
+		as.Nil(c1.Err())
+		as.Equal(int64(0), c1.Val())
+
+		v := tests.RandString32()
+		as.Nil(client.Set(k, v, 0).Err())
+
+		c3 := client.StrLen(k)
+		as.Nil(c3.Err())
+		as.Equal(int64(len(v)), c3.Val())
+	})
+}
