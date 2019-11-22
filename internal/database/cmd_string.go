@@ -8,6 +8,9 @@ import (
 	"time"
 )
 
+const TimeNeverExpire int64 = -1 // 永久，-1
+const TimeExpired int64 = -2     // 已过期、不存在
+
 func Get(r *RedisDB, args ...string) (interface{}, error) {
 	k := args[0]
 
@@ -17,20 +20,20 @@ func Get(r *RedisDB, args ...string) (interface{}, error) {
 	}
 
 	expire := r.expires.Get(k).(int64)
-	if expire == -1 {
+	if expire == TimeNeverExpire {
 		return pointer.String(v.(string)), nil
 	}
 
 	if now := nowMillisecond(); now > expire {
 		// 过期
 		r.dict.Del(k)
+		r.expires.Del(k)
 		return nil, nil
 	}
 
 	return pointer.String(v.(string)), nil
 }
 
-// 永久，-1
 // SET key value [EX seconds] [PX milliseconds] [NX|XX]
 func Set(r *RedisDB, args ...string) (interface{}, error) {
 	k := args[0]
@@ -40,8 +43,9 @@ func Set(r *RedisDB, args ...string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("millisecond", millisecond)
 	if millisecond == 0 {
-		millisecond = -1
+		millisecond = TimeNeverExpire
 	} else {
 		millisecond += nowMillisecond()
 	}
@@ -101,6 +105,7 @@ func getNxXx(args []string, offset int) (nx bool, xx bool, err error) {
 
 	if len(args) > offset+1 {
 		err = fmt.Errorf("[Redis.Get] got params %q, which endswith %q, but got extra params", args, args[offset])
+		return
 	}
 
 	return r == "nx", r == "xx", nil

@@ -29,7 +29,7 @@ func (r *parser) Read() (*Reply, error) {
 		if err != nil {
 			return nil, err
 		}
-		return NewWithBytes(res), nil
+		return NewWithStr(string(res)), nil
 	case '-':
 		message, err := r.readUntilCRLF()
 		if err != nil {
@@ -57,7 +57,7 @@ func (r *parser) Read() (*Reply, error) {
 			return nil, err
 		}
 
-		return NewWithBytes(bs), nil
+		return NewWithStr(string(bs)), nil
 	case '*':
 		// multi bulk reply
 		count, err := r.readIntBeforeCRLF()
@@ -74,7 +74,7 @@ func (r *parser) Read() (*Reply, error) {
 			replys = append(replys, reply)
 		}
 
-		return &Reply{Replies: replys}, nil
+		return NewWithReplies(replys), nil
 	}
 
 	return nil, fmt.Errorf("%b(%s): %w", respType, []byte{respType}, ErrUnSupportRespType)

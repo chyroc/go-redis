@@ -4,20 +4,16 @@ func NewWithErr(err error) *Reply {
 	if err != nil {
 		return &Reply{Err: err}
 	} else {
-		return &Reply{Null: true}
+		return NewWithNull()
 	}
 }
 
 func NewWithStr(str string) *Reply {
-	return &Reply{Str: str}
-}
-
-func NewWithBytes(bs []byte) *Reply {
-	return &Reply{Str: string(bs)}
+	return &Reply{Str: str, replyType: replyTypeStr}
 }
 
 func NewWithInt64(i int64) *Reply {
-	return &Reply{Integer: i}
+	return &Reply{Integer: i, replyType: replyTypeInt}
 }
 
 func NewWithNull() *Reply {
@@ -27,17 +23,11 @@ func NewWithNull() *Reply {
 func NewWithStringSlice(l []string) *Reply {
 	var replies []*Reply
 	for _, v := range l {
-		replies = append(replies, &Reply{
-			Err:     nil,
-			Null:    false,
-			Str:     v,
-			Integer: 0,
-			Replies: nil,
-		})
+		replies = append(replies, NewWithStr(v))
 	}
-	return &Reply{Replies: replies}
+	return NewWithReplies(replies)
 }
 
 func NewWithReplies(replies []*Reply) *Reply {
-	return &Reply{Replies: replies}
+	return &Reply{Replies: replies, replyType: replyTypeReplies}
 }

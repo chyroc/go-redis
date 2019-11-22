@@ -1,7 +1,6 @@
 package basetype
 
 import (
-	"fmt"
 	"strconv"
 	"testing"
 
@@ -28,7 +27,7 @@ func TestNewSkipList(t *testing.T) {
 	t.Run("", func(t *testing.T) {
 		s := NewSkipList()
 		as.Nil(s.Add("1", 1))
-		fmt.Println(s.String())
+		//fmt.Println(s.String())
 		as.Equal(ErrDataRepeated, s.Add("1", 1))
 	})
 }

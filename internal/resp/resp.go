@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+type replyType int
+
+const (
+	replyTypeInt = iota + 1
+	replyTypeStr
+	replyTypeReplies
+)
+
 // Reply ...
 type Reply struct {
 	Err     error // 只有run runWithLock 会在这里带有值，其他情况不用判断
@@ -13,6 +21,8 @@ type Reply struct {
 	Str     string
 	Integer int64
 	Replies []*Reply
+
+	replyType replyType
 }
 
 // String just for test

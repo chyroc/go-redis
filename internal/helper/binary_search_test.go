@@ -26,7 +26,7 @@ func TestSearchFirstGreaterEqual(t *testing.T) {
 			sort.Ints(arr)
 		}
 
-		fmt.Println("arr", arr)
+		//fmt.Println("arr", arr)
 
 		for idx, v := range arr {
 			idx2, found := SearchFirstGreaterEqual(arr, int64(v))

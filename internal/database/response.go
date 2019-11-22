@@ -21,7 +21,17 @@ func interfaceToReply(i interface{}) *resp.Reply {
 		}
 	case []string:
 		return resp.NewWithStringSlice(r)
+	case int:
+		return resp.NewWithInt64(int64(r))
+	case int8:
+		return resp.NewWithInt64(int64(r))
+	case int16:
+		return resp.NewWithInt64(int64(r))
+	case int32:
+		return resp.NewWithInt64(int64(r))
+	case int64:
+		return resp.NewWithInt64(int64(r))
 	}
 
-	panic(fmt.Sprintf("%b 没有处理", i))
+	panic(fmt.Sprintf("%v(%T) 没有处理", i, i))
 }

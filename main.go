@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/chyroc/go-redis/internal/server"
 	"log"
+
+	"github.com/chyroc/go-redis/internal/server"
 )
 
 func main() {
@@ -13,8 +14,3 @@ func main() {
 		log.Fatalln(err)
 	}
 }
-//
-//func main() {
-//	a := []int{}
-//	fmt.Println(a[10:12])
-//}

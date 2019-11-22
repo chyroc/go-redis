@@ -1,31 +1,13 @@
 package server_test
 
 import (
-	"github.com/chyroc/go-redis/internal/server"
-	"github.com/chyroc/go-redis/internal/tests"
+	"testing"
+
 	"github.com/go-redis/redis/v7"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
+
+	"github.com/chyroc/go-redis/internal/tests"
 )
-
-var client *redis.Client
-var addr = ":9091"
-
-func init() {
-	go func() {
-		if err := server.New(":9091").Run(); err != nil {
-			panic(err)
-		}
-	}()
-
-	client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-	time.Sleep(time.Second / 2)
-}
 
 func TestGet(t *testing.T) {
 	as := assert.New(t)
@@ -56,6 +38,5 @@ func TestGet(t *testing.T) {
 		as.Nil(c2.Err())
 		as.Equal("OK", c2.Val())
 	})
-
 
 }

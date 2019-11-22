@@ -18,4 +18,8 @@ var commandTemplates = map[string]commandTemplate{
 		argsCount: -7,
 		processor: Set,
 	},
+	"ttl": {
+		argsCount: 1,
+		processor: Ttl,
+	},
 }

@@ -2,6 +2,7 @@ package resp
 
 import (
 	"bytes"
+	"fmt"
 	"strconv"
 )
 
@@ -27,7 +28,7 @@ func (r *Reply) Bytes() []byte {
 		buf.WriteByte(cr)
 		buf.WriteByte(lf)
 
-	} else if r.Integer != 0 {
+	} else if r.replyType == replyTypeInt {
 
 		// 整数回复 ":"
 
@@ -37,7 +38,7 @@ func (r *Reply) Bytes() []byte {
 		buf.WriteByte(cr)
 		buf.WriteByte(lf)
 
-	} else if r.Str != "" {
+	} else if r.replyType == replyTypeStr {
 
 		// 状态回复 "+"
 
@@ -47,7 +48,7 @@ func (r *Reply) Bytes() []byte {
 		buf.WriteByte(cr)
 		buf.WriteByte(lf)
 
-	} else if len(r.Replies) > 0 {
+	} else if r.replyType == replyTypeReplies {
 
 		// 多条批量回复 "*"
 
@@ -60,6 +61,8 @@ func (r *Reply) Bytes() []byte {
 		for _, v := range r.Replies {
 			buf.Write(v.Bytes())
 		}
+	} else {
+		panic(fmt.Sprintf("reply bytes 错误"))
 	}
 
 	return buf.Bytes()

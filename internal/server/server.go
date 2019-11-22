@@ -37,7 +37,7 @@ func (r *serverImpl) handlequeue() {
 	for {
 		select {
 		case message := <-r.message:
-			fmt.Printf("[got message] %v\n", message)
+			//fmt.Printf("[got message] %v\n", message)
 
 			cli := message.cli
 			reply := message.reply
