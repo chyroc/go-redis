@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
-
 	"github.com/chyroc/go-redis/internal/server"
+	"log"
 )
 
 func main() {

@@ -31,6 +31,10 @@ var commandTemplates = map[string]commandTemplate{
 		argsCount: 2,
 		processor: Append,
 	},
+	"incr": {
+		argsCount: 1,
+		processor: Incr,
+	},
 
 	// expire
 	"ttl": {

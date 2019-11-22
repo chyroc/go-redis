@@ -95,3 +95,26 @@ func TestAppend(t *testing.T) {
 		as.Equal(int64(len(v+v2)), c2.Val())
 	})
 }
+
+func TestIncr(t *testing.T) {
+	as := assert.New(t)
+
+	t.Run("", func(t *testing.T) {
+		k := tests.RandString32()
+
+		c1 := client.Incr(k)
+		as.Nil(c1.Err())
+		as.Equal(int64(1), c1.Val())
+	})
+
+	t.Run("", func(t *testing.T) {
+		k := tests.RandString32()
+		as.Nil(client.Set(k, 100, 0).Err())
+
+		for i := 0; i < 1200; i++ {
+			c1 := client.Incr(k)
+			as.Nil(c1.Err())
+			as.Equal(int64(100+i+1), c1.Val())
+		}
+	})
+}

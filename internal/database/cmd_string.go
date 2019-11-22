@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"github.com/chyroc/go-redis/internal/basetype"
+	"strconv"
 )
 
 const TimeNeverExpire int64 = -1 // 永久，-1
@@ -105,4 +106,33 @@ func Append(r *RedisDB, args ...string) (interface{}, error) {
 	v2.Append(v)
 
 	return v2.Len(), nil
+}
+
+// SETRANGE key offset value
+// 从偏移量 offset 开始， 用 value 参数覆写(overwrite)键 key 储存的字符串值。
+// 不存在的键 key 当作空白字符串处理。
+// SETRANGE 命令会确保字符串足够长以便将 value 设置到指定的偏移量上
+// 如果键 key 原来储存的字符串长度比偏移量小，那么原字符和偏移量之间的空白将用零字节(zerobytes, "\x00" )进行填充。
+// 因为 Redis 字符串的大小被限制在 512 兆(megabytes)以内， 所以用户能够使用的最大偏移量为 2^29-1(536870911) ， 如果你需要使用比这更大的空间， 请使用多个 key 。
+
+// INCR key
+// 为键 key 储存的数字值加上一。
+// 如果键 key 不存在， 那么它的值会先被初始化为 0 ， 然后再执行 INCR 命令。
+// 如果键 key 储存的值不能被解释为数字， 那么 INCR 命令将返回一个错误。
+// 返回值：INCR 命令会返回键 key 在执行加一操作之后的值。
+func Incr(r *RedisDB, args ...string) (interface{}, error) {
+	k := args[0]
+
+	v, _, err := r.getSDS(k)
+	if err != nil {
+		return nil, err
+	}
+	if v == nil {
+		if _, err := r.setSDS(k, strconv.Itoa(1), nil, 0, false, false); err != nil {
+			return nil, err
+		}
+		return 1, nil
+	}
+
+	return v.Int64Incr()
 }

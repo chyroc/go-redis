@@ -1,5 +1,9 @@
 package basetype
 
+import (
+	"strconv"
+)
+
 // SDS 简单动态字符串
 type SDS struct {
 	// 已经用的
@@ -38,10 +42,34 @@ func (s *SDS) String() string {
 	return string(s.buf[:s.len])
 }
 
+func (s *SDS) Int64() (int64, error) {
+	return strconv.ParseInt(s.String(), 10, 64)
+}
+
+func (s *SDS) Int64Incr() (int64, error) {
+	bs := s.buf[:s.len]
+	i, err := strconv.ParseInt(string(bs), 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	i++
+	j := strconv.FormatInt(i, 10)
+	if len(j) > len(bs) {
+		s.expansion(1)
+		s.len++
+		s.free--
+	}
+
+	for idx, c := range j {
+		s.buf[idx] = byte(c)
+	}
+	return i,nil
+}
+
 func (s *SDS) Append(str string) {
 	strlen := len(str)
 	for strlen > s.free {
-		s.expansion()
+		s.expansion(strlen)
 	}
 
 	copy(s.buf[s.len:s.len+strlen], str)
@@ -57,12 +85,23 @@ func (s *SDS) EqualToString(str string) bool {
 	return s.String() == str
 }
 
-// 扩容，容量调整为现在的两倍
-func (s *SDS) expansion() {
-	// 需要锁吗
+// 扩容
+// 需要锁吗
+func (s *SDS) expansion(neenlen int) {
+	if s.free >= neenlen {
+		return
+	}
+
 	total := s.len + s.free
-	newbuf := make([]byte, total*2)
+	var newtotal int
+	if total < 1024 {
+		newtotal = total * 2 // 两步
+	} else {
+		newtotal = 1024 * (total/1024 + 1) // 1024的备注
+	}
+
+	newbuf := make([]byte, newtotal)
 	copy(newbuf, s.buf)
 	s.buf = newbuf
-	s.free = total*2 - s.len
+	s.free = newtotal - s.len
 }
