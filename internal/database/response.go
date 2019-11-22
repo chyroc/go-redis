@@ -5,12 +5,16 @@ import (
 	"github.com/chyroc/go-redis/internal/resp"
 )
 
+type status string
+
 func interfaceToReply(i interface{}) *resp.Reply {
 	if i == nil {
 		return resp.NewWithNull()
 	}
 
 	switch r := i.(type) {
+	case status:
+		return resp.NewWithStatus(string(r))
 	case string:
 		return resp.NewWithStr(r)
 	case *string:

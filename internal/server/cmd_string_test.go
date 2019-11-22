@@ -38,5 +38,23 @@ func TestGet(t *testing.T) {
 		as.Nil(c2.Err())
 		as.Equal("OK", c2.Val())
 	})
+}
 
+func TestGetSet(t *testing.T) {
+	as := assert.New(t)
+
+	t.Run("", func(t *testing.T) {
+		k := tests.RandString32()
+
+		c1 := client.Get(k)
+		as.Equal(redis.Nil, c1.Err())
+
+		v := tests.RandString32()
+		c2 := client.GetSet(k, v)
+		as.Equal(redis.Nil, c2.Err())
+
+		c3 := client.Get(k)
+		as.Nil(c3.Err())
+		as.Equal(v, c3.Val())
+	})
 }

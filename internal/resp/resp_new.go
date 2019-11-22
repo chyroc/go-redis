@@ -8,8 +8,12 @@ func NewWithErr(err error) *Reply {
 	}
 }
 
+func NewWithStatus(str string) *Reply {
+	return &Reply{str: str, replyType: replyTypeStatus}
+}
+
 func NewWithStr(str string) *Reply {
-	return &Reply{Str: str, replyType: replyTypeStr}
+	return &Reply{str: str, replyType: replyTypeString}
 }
 
 func NewWithInt64(i int64) *Reply {

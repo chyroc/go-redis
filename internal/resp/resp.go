@@ -10,7 +10,8 @@ type replyType int
 
 const (
 	replyTypeInt = iota + 1
-	replyTypeStr
+	replyTypeStatus
+	replyTypeString
 	replyTypeReplies
 )
 
@@ -18,7 +19,7 @@ const (
 type Reply struct {
 	Err     error // 只有run runWithLock 会在这里带有值，其他情况不用判断
 	Null    bool
-	Str     string
+	str     string
 	Integer int64
 	Replies []*Reply
 
@@ -33,8 +34,8 @@ func (p *Reply) String() string {
 	if p.Null {
 		return "<nil>"
 	}
-	if p.Str != "" {
-		return fmt.Sprintf("<String: %v>", p.Str)
+	if p.str != "" {
+		return fmt.Sprintf("<String: %v>", p.str)
 	}
 	if p.Integer != 0 {
 		return fmt.Sprintf("<Int: %v>", p.Integer)
@@ -66,7 +67,7 @@ func (p *Reply) NullString() (NullString, error) {
 		return NullString{}, nil
 	}
 
-	return NullString{String: p.Str, Valid: true}, nil
+	return NullString{String: p.str, Valid: true}, nil
 }
 
 func (p *Reply) Bool() (bool, error) {
@@ -80,7 +81,7 @@ func (p *Reply) Float64() (float64, error) {
 	if p.Err != nil {
 		return 0, p.Err
 	}
-	return strconv.ParseFloat(p.Str, 64)
+	return strconv.ParseFloat(p.str, 64)
 }
 
 func (p *Reply) NullStringSlice() ([]NullString, error) {
@@ -109,7 +110,7 @@ func (p *Reply) StringSlice() ([]string, error) {
 		if v.Err != nil {
 			return nil, v.Err // TODO 真的有吗
 		}
-		s = append(s, v.Str)
+		s = append(s, v.str)
 	}
 	return s, nil
 }
@@ -127,7 +128,7 @@ func (p *Reply) Map() (map[string]string, error) {
 		if p.Replies[i+1].Err != nil {
 			return nil, p.Replies[i+1].Err // TODO 真的有吗
 		}
-		s[p.Replies[i].Str] = p.Replies[i+1].Str
+		s[p.Replies[i].str] = p.Replies[i+1].str
 	}
 	return s, nil
 }
@@ -144,11 +145,11 @@ func (p *Reply) GeoLocationSlice() ([]*GeoLocation, error) {
 		if len(v.Replies) < 2 {
 			return nil, fmt.Errorf("expect 2 string to parse to geo")
 		}
-		longitude, err := strconv.ParseFloat(v.Replies[0].Str, 64)
+		longitude, err := strconv.ParseFloat(v.Replies[0].str, 64)
 		if err != nil {
 			return nil, err
 		}
-		latitude, err := strconv.ParseFloat(v.Replies[1].Str, 64)
+		latitude, err := strconv.ParseFloat(v.Replies[1].str, 64)
 		if err != nil {
 			return nil, err
 		}
@@ -166,7 +167,7 @@ func (p *Reply) SortedSetSlice() ([]*SortedSet, error) {
 		if v.Err != nil {
 			return nil, v.Err
 		}
-		ss = append(ss, &SortedSet{Member: v.Str})
+		ss = append(ss, &SortedSet{Member: v.str})
 	}
 	return ss, nil
 }
@@ -183,11 +184,11 @@ func (p *Reply) SortedSetSliceWithScores() ([]*SortedSet, error) {
 		if p.Replies[i+1].Err != nil {
 			return nil, p.Replies[i+1].Err // TODO 真的有吗
 		}
-		score, err := strconv.ParseFloat(p.Replies[i+1].Str, 64)
+		score, err := strconv.ParseFloat(p.Replies[i+1].str, 64)
 		if err != nil {
 			return nil, err
 		}
-		ss = append(ss, &SortedSet{Member: p.Replies[i].Str, Score: score})
+		ss = append(ss, &SortedSet{Member: p.Replies[i].str, Score: score})
 	}
 
 	return ss, nil
@@ -197,5 +198,5 @@ func (p *Reply) Float() (float64, error) {
 	if p.Err != nil {
 		return 0, p.Err
 	}
-	return strconv.ParseFloat(p.Str, 64)
+	return strconv.ParseFloat(p.str, 64)
 }

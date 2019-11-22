@@ -29,7 +29,7 @@ func (r *parser) Read() (*Reply, error) {
 		if err != nil {
 			return nil, err
 		}
-		return NewWithStr(string(res)), nil
+		return NewWithStatus(string(res)), nil
 	case '-':
 		message, err := r.readUntilCRLF()
 		if err != nil {

@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"github.com/chyroc/go-pointer"
 	"strconv"
 	"strings"
 	"time"
@@ -21,7 +20,7 @@ func Get(r *RedisDB, args ...string) (interface{}, error) {
 
 	expire := r.expires.Get(k).(int64)
 	if expire == TimeNeverExpire {
-		return pointer.String(v.(string)), nil
+		return v.(string), nil
 	}
 
 	if now := nowMillisecond(); now > expire {
@@ -31,7 +30,7 @@ func Get(r *RedisDB, args ...string) (interface{}, error) {
 		return nil, nil
 	}
 
-	return pointer.String(v.(string)), nil
+	return v.(string), nil
 }
 
 // SET key value [EX seconds] [PX milliseconds] [NX|XX]
@@ -64,7 +63,24 @@ func Set(r *RedisDB, args ...string) (interface{}, error) {
 
 	r.dict.Set(k, v)
 	r.expires.Set(k, millisecond)
-	return "OK", nil
+	return status("OK"), nil
+}
+
+// GETSET key value
+func GetSet(r *RedisDB, args ...string) (interface{}, error) {
+	k := args[0]
+	v := args[1]
+
+	old, err := Get(r, k)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := Set(r, k, v); err != nil {
+		return nil, err
+	}
+
+	return old, nil
 }
 
 func getMillisecond(args []string, offset int) (off int, ms int64, err error) {

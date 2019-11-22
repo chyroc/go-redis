@@ -45,11 +45,14 @@ func (r *serverImpl) handlequeue() {
 			fmt.Println(reply.String())
 
 			args, err := reply.StringSlice()
+			var bs []byte
 			if err != nil {
-				_, _ = cli.writer.Write(resp.NewWithErr(err).Bytes())
+				bs = resp.NewWithErr(err).Bytes()
 			} else {
-				_, _ = cli.writer.Write(cli.db.ExecCommand(args...).Bytes())
+				bs = cli.db.ExecCommand(args...).Bytes()
 			}
+			//fmt.Printf("[Redis.Response] %q\n", bs)
+			_, _ = cli.writer.Write(bs)
 		}
 	}
 }

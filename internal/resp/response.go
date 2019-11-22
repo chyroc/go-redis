@@ -38,12 +38,12 @@ func (r *Reply) Bytes() []byte {
 		buf.WriteByte(cr)
 		buf.WriteByte(lf)
 
-	} else if r.replyType == replyTypeStr {
+	} else if r.replyType == replyTypeStatus {
 
 		// 状态回复 "+"
 
 		buf.WriteByte('+')
-		buf.WriteString(r.Str)
+		buf.WriteString(r.str)
 
 		buf.WriteByte(cr)
 		buf.WriteByte(lf)
@@ -61,6 +61,18 @@ func (r *Reply) Bytes() []byte {
 		for _, v := range r.Replies {
 			buf.Write(v.Bytes())
 		}
+	} else if r.replyType == replyTypeString {
+
+		buf.WriteByte('$')
+		buf.WriteString(strconv.Itoa(len(r.str)))
+
+		buf.WriteByte(cr)
+		buf.WriteByte(lf)
+
+		buf.WriteString(r.str)
+		buf.WriteByte(cr)
+		buf.WriteByte(lf)
+
 	} else {
 		panic(fmt.Sprintf("reply bytes 错误"))
 	}

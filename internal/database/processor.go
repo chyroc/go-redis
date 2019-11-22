@@ -10,6 +10,7 @@ type commandTemplate struct {
 // 0 1 2 表示参数个数
 // -1 表示最多 x 个
 var commandTemplates = map[string]commandTemplate{
+	// string
 	"get": {
 		argsCount: 1,
 		processor: Get,
@@ -18,6 +19,12 @@ var commandTemplates = map[string]commandTemplate{
 		argsCount: -7,
 		processor: Set,
 	},
+	"getset": {
+		argsCount: 2,
+		processor: GetSet,
+	},
+
+	// expire
 	"ttl": {
 		argsCount: 1,
 		processor: Ttl,
