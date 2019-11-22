@@ -14,7 +14,7 @@ var addr = os.Getenv("GO_REDIS_PORT") // GO_REDIS_PORT=:9091 go test ./...
 
 func init() {
 	go func() {
-		if addr == ":9090" {
+		if addr == ":9090" || addr == ":6379" {
 			return
 		}
 		if err := server.New(addr).Run(); err != nil {
