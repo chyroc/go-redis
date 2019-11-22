@@ -10,6 +10,18 @@ import (
 const TimeNeverExpire int64 = -1 // 永久，-1
 const TimeExpired int64 = -2     // 已过期、不存在
 
+func stringOrError(v interface{}) (interface{}, error) {
+	if v == nil {
+		return v, nil
+	}
+	switch v.(type) {
+	case string:
+		return v, nil
+	default:
+		return nil, ErrOperationWrongKindValue
+	}
+}
+
 func Get(r *RedisDB, args ...string) (interface{}, error) {
 	k := args[0]
 
@@ -17,10 +29,13 @@ func Get(r *RedisDB, args ...string) (interface{}, error) {
 	if v == nil {
 		return nil, nil
 	}
+	if _, err := stringOrError(v); err != nil {
+		return nil, err
+	}
 
 	expire := r.expires.Get(k).(int64)
 	if expire == TimeNeverExpire {
-		return v.(string), nil
+		return v, nil
 	}
 
 	if now := nowMillisecond(); now > expire {
@@ -30,7 +45,7 @@ func Get(r *RedisDB, args ...string) (interface{}, error) {
 		return nil, nil
 	}
 
-	return v.(string), nil
+	return v, nil
 }
 
 // SET key value [EX seconds] [PX milliseconds] [NX|XX]
@@ -71,10 +86,15 @@ func GetSet(r *RedisDB, args ...string) (interface{}, error) {
 	k := args[0]
 	v := args[1]
 
+	if _, err := stringOrError(v); err != nil {
+		return nil, err
+	}
+
 	old, err := Get(r, k)
 	if err != nil {
 		return nil, err
 	}
+	//stringOrError(old)
 
 	if _, err := Set(r, k, v); err != nil {
 		return nil, err
