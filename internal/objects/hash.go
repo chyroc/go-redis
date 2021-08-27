@@ -1,7 +1,7 @@
 package objects
 
 import (
-	"github.com/chyroc/go-pointer"
+	"github.com/chyroc/go-ptr"
 	"github.com/chyroc/go-redis/internal/basetype"
 )
 
@@ -38,7 +38,7 @@ func (r *RedisHashObject) HGet(k string) *string {
 	if v == nil {
 		return nil
 	}
-	return pointer.String(v.(*basetype.SDS).String())
+	return ptr.String(v.(*basetype.SDS).String())
 }
 
 func (r *RedisHashObject) HExist(k string) bool {
