@@ -8,6 +8,6 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spaolacci/murmur3 v1.1.0
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
-	gopkg.in/yaml.v2 v2.2.2 // indirect
+	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
+	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
